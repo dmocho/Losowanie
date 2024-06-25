@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiszki do nauki</title>
+   <style>
+    body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+   </style>
+</head>
+<body>
+    <div class="container">
+        <button id="randomQuestionBtn">Losuj pytanie</button>
+        <div id="questionContainer" class="hidden">
+            <p id="question"></p>
+            <button id="showAnswerBtn">Zobacz odpowiedź</button>
+            <p id="answer" class="hidden"></p>
+        </div>
+    </div>
+    <script>
+        const questions = [
+        {
+            question: "Omów znaczenie metod oceny opłacalności w bezwzględnym rachunku efektywności projektów inwestycyjnych (założenia, algorytmy, interpretacja, kryterium decyzyjne).",
+            answer: "Metody oceny opłacalności w bezwzględnym rachunku efektywności projektów inwestycyjnych obejmują m.in. NPV, IRR, i okres zwrotu. Założenia to m.in. prognozy przepływów pieniężnych, koszty kapitału, a algorytmy są używane do obliczenia tych wartości. Interpretacja wyników polega na ocenie, czy projekt przyniesie wartość dodaną, a kryterium decyzyjne to najczęściej wybór projektu z najwyższą wartością NPV lub IRR."
+        },
+        {
+            question: "Funkcje kosztu kapitału w ocenie opłacalności projektów inwestycyjnych.",
+            answer: "Koszt kapitału jest używany jako stopa dyskontowa do oceny NPV i IRR projektów inwestycyjnych. Reprezentuje on minimalną stopę zwrotu wymaganą przez inwestorów i służy jako próg rentowności projektów."
+        },
+        {
+            question: "Omów korzyści projektu.",
+            answer: "Korzyści projektu mogą być finansowe, takie jak zwiększenie przychodów lub zmniejszenie kosztów, oraz niefinansowe, takie jak poprawa jakości produktów, zwiększenie satysfakcji klientów, lub korzyści społeczne."
+        },
+        {
+            question: "Porównaj bezwzględny i względny rachunek efektywności projektów inwestycyjnych.",
+            answer: "Bezwzględny rachunek efektywności skupia się na bezpośrednich wynikach finansowych projektu, podczas gdy względny rachunek porównuje różne projekty, uwzględniając czynniki takie jak koszty alternatywne i ryzyko."
+        },
+        {
+            question: "Znaczenie kosztu alternatywnego w ekonomii i finansach.",
+            answer: "Koszt alternatywny reprezentuje wartość najlepszej alternatywy, z której trzeba zrezygnować dokonując danego wyboru. Jest kluczowy w podejmowaniu decyzji inwestycyjnych i alokacji zasobów."
+        },
+        {
+            question: "Omów znaczenie zjawiska asymetrii informacji w zarządzaniu projektami.",
+            answer: "Asymetria informacji występuje, gdy jedna strona ma więcej informacji niż druga, co może prowadzić do nieoptymalnych decyzji. W zarządzaniu projektami, może to skutkować nierównowagą negocjacyjną i nieefektywnymi kontraktami."
+        },
+        {
+            question: "Znaczenie projektów publicznych dla rozwoju gospodarczego kraju.",
+            answer: "Projekty publiczne, takie jak infrastruktura, edukacja i zdrowie, przyczyniają się do długoterminowego wzrostu gospodarczego poprzez poprawę efektywności gospodarki i jakości życia."
+        },
+        {
+            question: "Charakterystyka struktur rynku.",
+            answer: "Struktury rynku obejmują monopol, oligopol, konkurencję doskonałą i monopolistyczną. Każda struktura charakteryzuje się różnym stopniem konkurencji, barierami wejścia, oraz możliwością ustalania cen."
+        },
+        {
+            question: "Problemy zawodności rynku.",
+            answer: "Zawodność rynku występuje, gdy rynek nie jest w stanie efektywnie alokować zasobów, prowadząc do zjawisk takich jak niedobory, nadmiary, lub negatywne efekty zewnętrzne. Przykłady to zanieczyszczenie środowiska i niewystarczająca produkcja dóbr publicznych."
+        },
+        {
+            question: "Oceń metodykę SCRUM z punktu widzenia skuteczności realizacji projektu.",
+            answer: "SCRUM jest metodyką Agile, która poprawia skuteczność realizacji projektów poprzez iteracyjne podejście, stałą komunikację i dostosowywanie do zmieniających się wymagań. Pozwala na szybką reakcję na zmiany i lepszą kontrolę nad projektem."
+        },
+        {
+            question: "Jak powinna przebiegać ocena pracy zespołu projektowego?",
+            answer: "Ocena pracy zespołu projektowego powinna obejmować regularne przeglądy wydajności, feedback 360 stopni, analizę osiągniętych celów oraz identyfikację obszarów do poprawy. Ważne jest również uwzględnienie zaangażowania i współpracy w zespole."
+        },
+        {
+            question: "Proszę omówić etapy zarządzania strategicznego.",
+            answer: "Etapy zarządzania strategicznego obejmują analizę strategiczną, formułowanie strategii, wdrażanie strategii oraz kontrolę i ocenę jej realizacji. Każdy z tych etapów wymaga szczegółowej analizy i dostosowywania w miarę zmieniających się warunków."
+        },
+        {
+            question: "Omów główne wyzwania fazy planowania projektów.",
+            answer: "Główne wyzwania fazy planowania projektów obejmują dokładne określenie celów, zarządzanie zakresem, harmonogramem i budżetem, identyfikację ryzyk oraz zapewnienie odpowiednich zasobów i komunikacji w zespole."
+        },
+        {
+            question: "Jakie zależności występują pomiędzy poszczególnymi strategiami przedsiębiorstwa?",
+            answer: "Poszczególne strategie przedsiębiorstwa mogą być ze sobą powiązane poprzez wspólne cele, zasoby oraz wpływ na różne aspekty działalności firmy. Strategia na poziomie korporacyjnym wpływa na strategie na poziomie jednostek biznesowych oraz funkcjonalne."
+        },
+        {
+            question: "Proszę omówić rolę analizy strategicznej w formułowaniu strategii przedsiębiorstwa.",
+            answer: "Analiza strategiczna, w tym analiza SWOT, PESTEL, i analiza konkurencji, dostarcza informacji niezbędnych do oceny obecnej sytuacji firmy, identyfikacji szans i zagrożeń oraz podejmowania świadomych decyzji strategicznych."
+        },
+        {
+            question: "W jaki sposób dokonuje się analizy atrakcyjności sektora?",
+            answer: "Analiza atrakcyjności sektora często wykorzystuje model pięciu sił Portera, który ocenia konkurencyjność sektora na podstawie czynników takich jak siła dostawców, siła nabywców, zagrożenie nowymi wejściami, zagrożenie substytutami oraz intensywność rywalizacji."
+        },
+        {
+            question: "W jaki sposób dokonuje się analizy potencjału wewnętrznego przedsiębiorstwa?",
+            answer: "Analiza potencjału wewnętrznego przedsiębiorstwa obejmuje ocenę zasobów, umiejętności, procesów oraz wyników finansowych firmy. Techniki takie jak analiza SWOT i analiza zasobów (RBV) są często wykorzystywane."
+        },
+        {
+            question: "Omów koszty projektu.",
+            answer: "Koszty projektu obejmują koszty bezpośrednie (materiały, robocizna) i pośrednie (koszty administracyjne, ogólne). Zarządzanie kosztami obejmuje planowanie budżetu, monitorowanie wydatków oraz kontrolę kosztów w celu zapewnienia realizacji projektu w ramach budżetu."
+        },
+        {
+            question: "Proszę omówić podstawowe strategie rozwoju przedsiębiorstwa.",
+            answer: "Podstawowe strategie rozwoju przedsiębiorstwa obejmują rozwój rynku, rozwój produktu, dywersyfikację oraz integrację pionową i poziomą. Każda z tych strategii ma na celu wzrost i zwiększenie konkurencyjności firmy."
+        },
+        {
+            question: "Proszę ocenić formy rozwoju zewnętrznego przedsiębiorstwa.",
+            answer: "Formy rozwoju zewnętrznego przedsiębiorstwa obejmują fuzje, przejęcia, alianse strategiczne oraz joint ventures. Każda z tych form może przyspieszyć rozwój firmy, zwiększyć jej zasoby i zdolności, ale również wiąże się z ryzykiem i wyzwaniami integracyjnymi."
+        },
+        {
+            question: "Omów znaczenie poszczególnych funkcji kierowniczych w zależności od szczebla zarządzania przedsiębiorstwa.",
+            answer: "Znaczenie funkcji kierowniczych zmienia się w zależności od szczebla zarządzania. Na poziomie operacyjnym kluczowe są funkcje takie jak kontrola i koordynacja, na poziomie średnim planowanie i organizowanie, a na poziomie najwyższym formułowanie strategii i podejmowanie decyzji strategicznych."
+        },
+        {
+            question: "Jaka jest rola menedżera w organizacjach?",
+            answer: "Rola menedżera obejmuje planowanie, organizowanie, kierowanie oraz kontrolowanie działań organizacji. Menedżerowie są odpowiedzialni za osiąganie celów organizacyjnych, zarządzanie zespołem oraz skuteczne wykorzystanie zasobów."
+        },
+        {
+            question: "Jaki wpływ na zarządzanie mają dokonania przedstawicieli podstawowych szkół zarządzania?",
+            answer: "Dokonania przedstawicieli szkół zarządzania, takich jak szkoła klasyczna, behawioralna, czy ilościowa, wniosły różne podejścia i techniki zarządzania, które pomogły w rozwoju teorii i praktyki zarządzania, poprawiając efektywność i skuteczność zarządzania organizacjami."
+        },
+        {
+            question: "W jaki sposób należy podejmować decyzje w organizacji?",
+            answer: "Decyzje w organizacji powinny być podejmowane na podstawie analizy danych, uwzględniając cele organizacyjne, zasoby oraz potencjalne ryzyka i korzyści. Ważne jest również zaangażowanie odpowiednich interesariuszy w proces decyzyjny."
+        },
+        {
+            question: "W jaki sposób należy kształtować kulturę organizacyjną?",
+            answer: "Kulturę organizacyjną kształtuje się poprzez promowanie wartości, norm i zachowań, które wspierają cele organizacyjne. Ważne jest również przywództwo, komunikacja oraz motywowanie pracowników do zaangażowania i współpracy."
+        },
+        {
+            question: "Jakie czynniki należy uwzględniać przy projektowaniu struktury organizacyjnej?",
+            answer: "Przy projektowaniu struktury organizacyjnej należy uwzględniać czynniki takie jak strategia firmy, wielkość i rodzaj działalności, kultura organizacyjna, oraz otoczenie zewnętrzne. Ważne jest również zapewnienie efektywnej komunikacji i koordynacji."
+        },
+        {
+            question: "Proszę ocenić użyteczność dla menedżerów podstawowych teorii motywacji.",
+            answer: "Podstawowe teorie motywacji, takie jak teoria Maslowa, Herzberga, czy McGregora, są użyteczne dla menedżerów, ponieważ pomagają zrozumieć, co motywuje pracowników i jak skutecznie zwiększać ich zaangażowanie i produktywność."
+        },
+        {
+            question: "Jak zmieniło się podejście do pracowników w XX i XXI wieku?",
+            answer: "Podejście do pracowników zmieniło się z modelu autorytarnego i hierarchicznego w XX wieku do bardziej współczesnego podejścia opartego na współpracy, empowerment, elastyczności i zrównoważeniu życia zawodowego i prywatnego w XXI wieku."
+        },
+        {
+            question: "W jaki sposób należy zbudować skuteczny zespół projektowy?",
+            answer: "Skuteczny zespół projektowy buduje się poprzez dobór odpowiednich członków z różnorodnymi umiejętnościami, jasne określenie celów i ról, promowanie komunikacji i współpracy, oraz motywowanie i wspieranie zespołu przez lidera projektu."
+        },
+        {
+            question: "Jakie kompetencje powinien mieć kierownik zespołu projektowego?",
+            answer: "Kierownik zespołu projektowego powinien mieć kompetencje takie jak umiejętność zarządzania czasem, komunikacja, rozwiązywanie problemów, przywództwo, oraz umiejętność motywowania i koordynowania działań zespołu."
+        },
+        {
+            question: "Proszę omówić podstawowe strategie konkurencji.",
+            answer: "Podstawowe strategie konkurencji obejmują strategie kosztowe, strategie różnicowania oraz strategie koncentracji. Strategie kosztowe skupiają się na osiągnięciu przewagi kosztowej, strategie różnicowania na oferowaniu unikalnych produktów lub usług, a strategie koncentracji na zaspokajaniu potrzeb określonego segmentu rynku."
+        },
+        {
+            question: "Jak należy zorganizować pracę zespołu projektowego nastawionego na współpracę?",
+            answer: "Praca zespołu projektowego nastawionego na współpracę powinna być zorganizowana poprzez jasne określenie ról i odpowiedzialności, promowanie otwartej komunikacji, wspólne cele, regularne spotkania zespołu oraz budowanie zaufania między członkami zespołu."
+        },
+        {
+            question: "Omów główne wyzwania fazy wykonawstwa projektów.",
+            answer: "Główne wyzwania fazy wykonawstwa projektów obejmują zarządzanie harmonogramem, kontrolowanie kosztów, zapewnienie jakości, monitorowanie postępu, zarządzanie ryzykiem oraz efektywne komunikowanie się z interesariuszami."
+        },
+        {
+            question: "W jaki sposób należy efektywnie komunikować się w zespole projektowym?",
+            answer: "Efektywna komunikacja w zespole projektowym wymaga regularnych spotkań, jasnego i zrozumiałego przekazywania informacji, aktywnego słuchania, wykorzystywania różnych narzędzi komunikacyjnych oraz tworzenia środowiska sprzyjającego otwartej wymianie pomysłów."
+        },
+        {
+            question: "Jakie warunki powinny być spełnione, aby zespół projektowy był zaangażowany w realizację projektu?",
+            answer: "Aby zespół projektowy był zaangażowany w realizację projektu, ważne jest, aby członkowie zespołu mieli jasne cele, byli zmotywowani, otrzymywali wsparcie i uznanie, mieli możliwość rozwoju zawodowego oraz byli zaangażowani w proces podejmowania decyzji."
+        },
+        {
+            question: "Jaka jest rola konfliktu w zespole projektowym?",
+            answer: "Konflikt w zespole projektowym może być konstruktywny lub destruktywny. Konstruktywny konflikt może prowadzić do lepszych rozwiązań i innowacji, podczas gdy destruktywny konflikt może obniżać morale i wydajność. Ważne jest zarządzanie konfliktem w sposób, który promuje współpracę i rozwiązanie problemów."
+        },
+        {
+            question: "Jaki może być wpływ środowiska wewnętrznego na funkcjonowanie zespołu projektowego?",
+            answer: "Środowisko wewnętrzne, takie jak kultura organizacyjna, struktura organizacyjna, styl zarządzania oraz dostępność zasobów, może znacząco wpłynąć na funkcjonowanie zespołu projektowego. Pozytywne środowisko wewnętrzne sprzyja efektywności i zaangażowaniu zespołu."
+        },
+        {
+            question: "Omów specyfikę projektów.",
+            answer: "Specyfika projektów obejmuje ich tymczasowość, unikalność, oraz złożoność. Projekty mają określone cele, harmonogramy i budżety, wymagają zarządzania ryzykiem oraz koordynacji wielu działań i zasobów."
+        },
+        {
+            question: "Jaka jest zależność między rodzajami projektów, a specyfiką zarządzania nimi?",
+            answer: "Zarządzanie projektami różni się w zależności od rodzaju projektu. Projekty technologiczne wymagają innowacyjności i szybkiego tempa, projekty budowlane skupiają się na zarządzaniu zasobami i harmonogramem, a projekty badawcze na elastyczności i eksperymentowaniu. Specyfika projektu determinuje metodyki i narzędzia zarządzania."
+        },
+        {
+            question: "Omów rolę i znaczenie projektów w organizacjach.",
+            answer: "Projekty odgrywają kluczową rolę w organizacjach, umożliwiając realizację strategicznych celów, wprowadzanie innowacji, rozwój nowych produktów i usług oraz poprawę procesów. Projekty są narzędziem do wprowadzania zmian i adaptacji do dynamicznego otoczenia biznesowego."
+        },
+        {
+            question: "Jakie uwarunkowania realizacji projektów związane są z organizacją projektu w formule spółki-córki projektowej?",
+            answer: "Organizacja projektu w formule spółki-córki projektowej może przynieść korzyści takie jak większa elastyczność operacyjna, oddzielne finansowanie, oraz lepsze zarządzanie ryzykiem. Jednakże, może również wiązać się z wyzwaniami, takimi jak koordynacja z jednostką macierzystą, oraz kwestie prawne i podatkowe."
+        },
+        {
+            question: "Omów istotę i treść faz cyklu zarządzania projektami.",
+            answer: "Cykl zarządzania projektami obejmuje fazy inicjowania, planowania, wykonawstwa, monitorowania i zamknięcia. Każda faza ma swoje cele i zadania, od definiowania projektu i planowania jego realizacji, poprzez realizację i monitorowanie postępu, aż do zakończenia i oceny wyników."
+        },
+        {
+            question: "Jakie zachodzą relacje między elementami triady celów projektów (tzw. żelazny trójkąt).",
+            answer: "Triada celów projektów, czyli żelazny trójkąt, obejmuje zakres, czas i koszty. Relacje między tymi elementami są wzajemnie zależne - zmiana jednego elementu wpływa na pozostałe. Na przykład, zwiększenie zakresu może prowadzić do wzrostu kosztów i wydłużenia czasu realizacji."
+        },
+        {
+            question: "Omów główne wyzwania fazy inicjowania i definiowania projektów.",
+            answer: "Główne wyzwania fazy inicjowania i definiowania projektów obejmują określenie celów projektu, zidentyfikowanie interesariuszy, uzyskanie zgody i wsparcia dla projektu, oraz stworzenie wstępnego planu zarządzania projektem. Ważne jest również zidentyfikowanie i ocena ryzyk."
+        },
+        {
+            question: "Na czym polega zarządzanie? Omów znaczenie podstawowych funkcji zarządzania.",
+            answer: "Zarządzanie polega na planowaniu, organizowaniu, kierowaniu oraz kontrolowaniu zasobów w celu osiągnięcia określonych celów. Podstawowe funkcje zarządzania to planowanie (wyznaczanie celów i opracowanie planów działania), organizowanie (alokacja zasobów i przypisanie zadań), kierowanie (motywowanie i nadzorowanie pracowników) oraz kontrolowanie (monitorowanie wyników i wprowadzanie korekt)."
+        },
+        {
+            question: "Scharakteryzuj cechy przedsiębiorstwa.",
+            answer: "Cechy przedsiębiorstwa obejmują zdolność do wytwarzania dóbr i usług, dążenie do osiągania zysku, samodzielność i odpowiedzialność za podejmowane decyzje, oraz elastyczność w adaptacji do zmieniających się warunków rynkowych."
+        },
+        {
+            question: "Proszę omówić proces zarządzania ryzykiem projektu.",
+            answer: "Proces zarządzania ryzykiem projektu obejmuje identyfikację ryzyk, analizę ich wpływu i prawdopodobieństwa, opracowanie strategii reagowania na ryzyka, monitorowanie ryzyk oraz podejmowanie działań korygujących. Skuteczne zarządzanie ryzykiem pozwala minimalizować negatywne skutki i zwiększać szanse na sukces projektu."
+        },
+        {
+            question: "Porównaj silne i słabe strony prowadzenia działalności w formie spółek osobowych i kapitałowych.",
+            answer: "Spółki osobowe cechują się elastycznością, łatwością zarządzania i brakiem podwójnego opodatkowania, ale mogą mieć ograniczone możliwości finansowania i większe ryzyko osobiste dla wspólników. Spółki kapitałowe oferują ograniczoną odpowiedzialność, większe możliwości pozyskiwania kapitału i trwałość, ale są bardziej skomplikowane w zarządzaniu i podlegają podwójnemu opodatkowaniu."
+        },
+        {
+            question: "Rola modelu biznesowego w działalności przedsiębiorstwa.",
+            answer: "Model biznesowy opisuje, w jaki sposób przedsiębiorstwo tworzy, dostarcza i zdobywa wartość. Jest kluczowy dla zrozumienia mechanizmów generowania przychodów, segmentów klientów, struktury kosztów oraz partnerstw, które wspierają realizację strategii biznesowej."
+        },
+        {
+            question: "Rozpiętości kierowania i zarządzania, a kształt struktury organizacyjnej.",
+            answer: "Rozpiętość kierowania odnosi się do liczby pracowników podlegających jednemu menedżerowi. Szeroka rozpiętość kierowania prowadzi do płaskiej struktury organizacyjnej, z mniejszą liczbą poziomów hierarchii, co sprzyja szybszemu podejmowaniu decyzji i większej elastyczności. Wąska rozpiętość kierowania prowadzi do bardziej hierarchicznej, pionowej struktury, co może zwiększać kontrolę i specjalizację."
+        },
+        {
+            question: "Znaczenie metodyk zarządzania projektami dla realizacji projektów.",
+            answer: "Metodyki zarządzania projektami, takie jak PRINCE2, Agile czy PMBoK, dostarczają struktury i narzędzi, które pomagają w efektywnym planowaniu, realizacji i monitorowaniu projektów. Pomagają również w zarządzaniu ryzykiem, zasobami i interesariuszami, co zwiększa prawdopodobieństwo sukcesu projektu."
+        },
+        {
+            question: "Jakie są główne podobieństwa i różnice między kluczowymi metodykami i standardami zarządzania projektami?",
+            answer: "Główne podobieństwa to celowe dążenie do realizacji projektów w sposób uporządkowany i kontrolowany, natomiast różnice obejmują podejście do zarządzania projektami, np. PRINCE2 jest bardziej strukturalne i procesowe, podczas gdy Agile skupia się na iteracyjnym i elastycznym podejściu."
+        },
+        {
+            question: "Jakie jest znaczenie biur zarządzania projektami (PMO) w organizacjach nastawionych na realizację projektów?",
+            answer: "PMO zapewnia standaryzację procesów zarządzania projektami, wsparcie metodologiczne, szkolenia oraz monitorowanie i kontrolę projektów. PMO pomaga w efektywnym zarządzaniu zasobami i poprawia ogólną skuteczność realizacji projektów w organizacji."
+        },
+        {
+            question: "Czym różni się klasyczne (ang. waterfall) od zwinnego (ang. agile) podejścia do zarządzania projektami?",
+            answer: "Klasyczne podejście waterfall polega na linearnej i sekwencyjnej realizacji projektów, z wyraźnie zdefiniowanymi etapami, podczas gdy zwinne podejście Agile charakteryzuje się iteracyjnością, elastycznością i ciągłą adaptacją do zmieniających się wymagań i warunków."
+        },
+        {
+            question: "Omów istotę i sposób wykorzystania sieciowych technik planowania przebiegu projektu.",
+            answer: "Sieciowe techniki planowania, takie jak diagramy PERT i CPM, pomagają w identyfikacji zależności między zadaniami, szacowaniu czasu realizacji i identyfikacji krytycznej ścieżki, co pozwala na efektywne zarządzanie harmonogramem i zasobami projektu."
+        },
+        {
+            question: "Omów istotę i znaczenie planowania zasobów projektu dla sprawnego przebiegu projektów.",
+            answer: "Planowanie zasobów projektu obejmuje identyfikację i przydział zasobów potrzebnych do realizacji zadań projektowych. Efektywne planowanie zasobów zapewnia, że wszystkie niezbędne zasoby są dostępne w odpowiednim czasie i ilości, co minimalizuje przestoje i zwiększa efektywność projektu."
+        },
+        {
+            question: "Oceń przydatność kluczowych metodyk i standardów zarządzania projektami w zależności od rodzaju projektów.",
+            answer: "Kluczowe metodyki, takie jak Agile, są przydatne w projektach IT i innowacyjnych, gdzie elastyczność i szybkie dostosowanie się do zmian są kluczowe. PRINCE2 i PMBoK są bardziej odpowiednie dla dużych, złożonych projektów z jasno zdefiniowanymi procesami i strukturami."
+        },
+        {
+            question: "Oceń metodykę PRINCE2 z punktu widzenia skuteczności realizacji projektu.",
+            answer: "Metodyka PRINCE2 jest skuteczna w realizacji projektów dzięki swojej strukturze, jasno zdefiniowanym rolom i odpowiedzialnościom, a także naciskowi na kontrolę i monitorowanie. Pomaga w zarządzaniu ryzykiem i zapewnia systematyczne podejście do realizacji projektów."
+        },
+        {
+            question: "W jaki sposób wdrażać metodyki zarządzania projektami w organizacjach?",
+            answer: "Wdrażanie metodyk zarządzania projektami wymaga szkolenia zespołów, dostosowania procesów organizacyjnych, ustanowienia standardów i procedur, wsparcia ze strony kadry kierowniczej oraz monitorowania i ciągłego doskonalenia praktyk zarządzania projektami."
+        },
+        {
+            question: "Omów kluczowe role uczestników projektów i ich zadania.",
+            answer: "Kluczowe role w projektach obejmują sponsora projektu, który zapewnia finansowanie i wsparcie, kierownika projektu, który planuje, koordynuje i nadzoruje realizację, oraz członków zespołu projektowego, którzy wykonują zadania. Istotne są także role interesariuszy, którzy mają wpływ na projekt i mogą być zaangażowani w podejmowanie decyzji."
+        },
+        {
+            question: "Jakie uwarunkowania realizacji projektów związane są z projektową organizacja macierzową?",
+            answer: "Organizacja macierzowa łączy funkcje pionowe i poziome, co pozwala na elastyczne zarządzanie zasobami i kompetencjami. Uwarunkowania związane z tą strukturą obejmują konieczność zarządzania podwójnymi liniami raportowania, koordynacji między różnymi działami oraz klarowne definiowanie ról i odpowiedzialności."
+        },
+        {
+            question: "Omów główne wyzwania fazy zamknięcia projektów.",
+            answer: "Główne wyzwania fazy zamknięcia projektów obejmują formalne zakończenie wszystkich działań projektowych, przekazanie wyników projektu, uzyskanie akceptacji interesariuszy, przeprowadzenie oceny projektu, dokumentację zdobytych doświadczeń oraz rozwiązanie zespołu projektowego."
+        },
+        {
+            question: "Jakie uwarunkowania realizacji projektów związane są z organizacją projektu w strukturze liniowej, a jakie w liniowo-sztabowej?",
+            answer: "W strukturze liniowej decyzje są podejmowane w sposób hierarchiczny, co może prowadzić do szybkiego podejmowania decyzji, ale ogranicza współpracę między funkcjami. Struktura liniowo-sztabowa wprowadza specjalistyczne funkcje sztabowe, które wspierają liniowych menedżerów, co zwiększa efektywność, ale może powodować konflikty kompetencyjne."
+        },
+        {
+            question: "Jakie uwarunkowania realizacji projektów związane są z organizacją projektu w formule zewnętrznej organizacji projektu?",
+            answer: "Organizacja projektu w formule zewnętrznej organizacji projektu, takiej jak outsourcing lub partnerstwo strategiczne, wiąże się z koniecznością zarządzania relacjami zewnętrznymi, kontrolą jakości, koordynacją działań oraz zapewnieniem zgodności z umowami i oczekiwaniami klienta."
+        },
+        {
+            question: "Oceń metodykę PMBoK Guide z punktu widzenia skuteczności realizacji projektu.",
+            answer: "PMBoK Guide jest skuteczny dzięki swojej kompleksowości, obejmującej najlepsze praktyki i standardy zarządzania projektami. Pomaga w zarządzaniu wszystkimi aspektami projektu, od inicjacji po zamknięcie, zapewniając strukturę i narzędzia do efektywnego zarządzania projektem."
+        },
+        {
+            question: "Znaczenie dojrzałości projektowej w zarządzaniu projektami.",
+            answer: "Dojrzałość projektowa odnosi się do zdolności organizacji do realizacji projektów w sposób systematyczny i powtarzalny. Wysoki poziom dojrzałości projektowej zwiększa skuteczność i efektywność realizacji projektów, minimalizując ryzyko niepowodzenia."
+        },
+        {
+            question: "Oceń konsekwencje wdrożenia PMO dla organizacji.",
+            answer: "Wdrożenie PMO może przynieść korzyści takie jak lepsza kontrola nad projektami, standaryzacja procesów, poprawa zarządzania zasobami oraz zwiększenie sukcesu projektów. Jednakże, może również wiązać się z kosztami wdrożenia i koniecznością zmiany kultury organizacyjnej."
+        },
+        {
+            question: "Porównaj główne modele biur zarządzania projektami (PMO).",
+            answer: "Główne modele PMO obejmują PMO wspierające (providing support and resources), PMO kontrolne (ensuring compliance with standards and methodologies) oraz PMO dyrektywne (directly managing and controlling projects). Różnią się one zakresem odpowiedzialności, stopniem zaangażowania w projekty oraz poziomem władzy i kontroli."
+        },
+        {
+            question: "Znaczenie ryzyka w zarządzaniu projektami.",
+            answer: "Zarządzanie ryzykiem jest kluczowe w zarządzaniu projektami, ponieważ pomaga identyfikować, oceniać i kontrolować potencjalne zagrożenia, które mogą wpłynąć na realizację projektu. Skuteczne zarządzanie ryzykiem minimalizuje negatywne konsekwencje i zwiększa prawdopodobieństwo sukcesu projektu."
+        },
+        {
+            question: "Omów zadania realizowane przez biura zarządzania projektami w organizacjach.",
+            answer: "Biura zarządzania projektami realizują zadania takie jak standaryzacja procesów, wsparcie merytoryczne dla zespołów projektowych, szkolenia i rozwój kompetencji, monitorowanie i raportowanie postępu projektów, zarządzanie zasobami oraz analiza i ocena wyników projektów."
+        },
+        {
+            question: "Jaka jest rola i udział biura zarządzania projektami (PMO) w strategicznym zarządzaniu projektami?",
+            answer: "Rola PMO w strategicznym zarządzaniu projektami polega na zapewnieniu zgodności projektów z celami strategicznymi organizacji, optymalizacji portfela projektów, monitorowaniu i raportowaniu postępów, oraz dostarczaniu narzędzi i metodologii wspierających zarządzanie projektami na poziomie strategicznym."
+        },
+        {
+            question: "Omów rolę i zadania biur zarządzania projektami w zarządzaniu wiedzą projektową?",
+            answer: "PMO odgrywa kluczową rolę w zarządzaniu wiedzą projektową poprzez gromadzenie, analizowanie i dystrybucję wiedzy oraz najlepszych praktyk. Zadania obejmują tworzenie baz danych, prowadzenie szkoleń, organizowanie sesji wymiany doświadczeń oraz zapewnienie dostępu do zasobów wiedzy dla zespołów projektowych."
+        },
+        {
+            question: "W jaki sposób wdrażać biura zarządzania projektami (PMO) w organizacjach?",
+            answer: "Wdrażanie PMO obejmuje analizę potrzeb organizacji, opracowanie planu wdrożenia, zapewnienie wsparcia kadry kierowniczej, szkolenie zespołów, ustanowienie standardów i procedur oraz monitorowanie i ciągłe doskonalenie działań PMO w celu dostosowania do zmieniających się potrzeb organizacji."
+        },
+        {
+            question: "Określ znaczenie interesariuszy w zarządzaniu projektami.",
+            answer: "Interesariusze mają kluczowe znaczenie w zarządzaniu projektami, ponieważ ich wsparcie, zaangażowanie i akceptacja są niezbędne do sukcesu projektu. Zarządzanie interesariuszami obejmuje identyfikację, analizę potrzeb i oczekiwań, komunikację oraz zarządzanie relacjami i wpływem interesariuszy na projekt."
+        },
+        {
+            question: "W jaki sposób wykorzystać klasyfikację interesariuszy w zarządzaniu projektami?",
+            answer: "Klasyfikacja interesariuszy pomaga w identyfikacji ich wpływu i zainteresowania projektem, co umożliwia opracowanie strategii zarządzania relacjami. Poprzez zrozumienie potrzeb i oczekiwań interesariuszy, można dostosować komunikację, zaangażowanie i działania w celu zminimalizowania ryzyka i zwiększenia wsparcia dla projektu."
+        },
+        {
+            question: "Porównaj strategie oddziaływania na interesariuszy.",
+            answer: "Strategie oddziaływania na interesariuszy obejmują informowanie, konsultowanie, współpracę i zarządzanie konfliktami. Informowanie polega na dostarczaniu istotnych informacji, konsultowanie to angażowanie interesariuszy w proces decyzyjny, współpraca to aktywne zaangażowanie w realizację projektu, a zarządzanie konfliktami to rozwiązywanie sporów i negocjacje."
+        },
+        {
+            question: "Proszę omówić proces zarządzania zaangażowaniem interesariuszy.",
+            answer: "Proces zarządzania zaangażowaniem interesariuszy obejmuje identyfikację interesariuszy, analizę ich wpływu i zainteresowania, opracowanie strategii zaangażowania, komunikację i zarządzanie relacjami, monitorowanie zaangażowania oraz adaptację strategii w odpowiedzi na zmiany w projekcie i otoczeniu."
+        },
+        {
+            question: "Omów podobieństwa i różnice między właścicielem ryzyka i właścicielem reakcji na ryzyko w projekcie.",
+            answer: "Właściciel ryzyka jest odpowiedzialny za identyfikację, ocenę i monitorowanie ryzyka, podczas gdy właściciel reakcji na ryzyko jest odpowiedzialny za wdrożenie i zarządzanie działaniami mającymi na celu zminimalizowanie lub wykorzystanie ryzyka. Oba role wymagają ścisłej współpracy i komunikacji w celu skutecznego zarządzania ryzykiem."
+        },
+        {
+            question: "Proszę porównać podejście procesowe i strukturalne (hierarchiczne) w zarządzaniu.",
+            answer: "Podejście procesowe koncentruje się na optymalizacji i zarządzaniu przepływem działań w organizacji, natomiast podejście strukturalne skupia się na hierarchii i podziale obowiązków. Procesowe podejście promuje elastyczność i efektywność, podczas gdy strukturalne zapewnia jasność ról i stabilność operacyjną."
+        },
+        {
+            question: "Proszę określić silne i słabe strony zarządzania procesowego.",
+            answer: "Silne strony zarządzania procesowego obejmują większą efektywność, elastyczność, szybsze podejmowanie decyzji oraz lepszą koordynację działań. Słabe strony mogą obejmować trudności w implementacji, konieczność ciągłego monitorowania i adaptacji procesów oraz potencjalne konflikty między jednostkami funkcjonalnymi."
+        },
+        {
+            question: "Omów zastosowanie najważniejszych koncepcji/metodyk doskonalenia procesów.",
+            answer: "Najważniejsze koncepcje doskonalenia procesów to Lean, Six Sigma i Kaizen. Lean skupia się na eliminacji marnotrawstwa i zwiększeniu wartości dla klienta, Six Sigma na redukcji zmienności i poprawie jakości, a Kaizen na ciągłym doskonaleniu poprzez małe, stopniowe zmiany. Wszystkie te metodyki wspierają poprawę efektywności i jakości procesów."
+        },
+        {
+            question: "Czemu służy mapowanie procesów w zarządzaniu?",
+            answer: "Mapowanie procesów służy do wizualizacji i analizowania przepływu działań w organizacji. Pomaga identyfikować nieefektywności, wąskie gardła, redundancje oraz możliwości doskonalenia procesów. Umożliwia także lepsze zrozumienie ról i odpowiedzialności oraz ułatwia komunikację i szkolenie pracowników."
+        },
+        {
+            question: "W jaki sposób planować zakres projektu?",
+            answer: "Planowanie zakresu projektu obejmuje definiowanie celów i wyników projektu, identyfikację i opis zadań, określenie granic i ograniczeń, analizę wymagań interesariuszy oraz opracowanie struktury podziału pracy (WBS). Dokładne planowanie zakresu pomaga w zarządzaniu oczekiwaniami i zapewnia klarowność co do tego, co ma być dostarczone."
+        },
+        {
+            question: "Oceń przydatność głównych modeli dojrzałości procesowej w zarządzaniu organizacją.",
+            answer: "Modele dojrzałości procesowej, takie jak CMMI, pomagają organizacjom ocenić i poprawić ich procesy poprzez zdefiniowanie poziomów dojrzałości. Przydatność tych modeli polega na dostarczaniu ram i najlepszych praktyk, które wspierają ciągłe doskonalenie procesów, zwiększają efektywność operacyjną oraz pomagają osiągnąć strategiczne cele organizacji."
+        },
+        {
+            question: "Jakie są wady i zalety wysokiej standaryzacji?",
+            answer: "Zalety wysokiej standaryzacji obejmują zwiększoną spójność i jakość, efektywność operacyjną, łatwiejsze szkolenie i wdrożenie pracowników oraz zgodność z regulacjami. Wady mogą obejmować brak elastyczności, ograniczenie innowacyjności, oraz trudności w adaptacji do zmieniających się warunków rynkowych."
+        },
+        {
+            question: "Rola i miejsce controllingu i budżetowania projektów w zarządzaniu projektami.",
+            answer: "Controlling i budżetowanie projektów odgrywają kluczową rolę w zapewnieniu efektywnego zarządzania zasobami, monitorowaniu kosztów i wydajności, oraz wspieraniu podejmowania decyzji poprzez dostarczanie rzetelnych danych finansowych i operacyjnych. Pomagają w identyfikacji odchyleń i wdrażaniu korekt w celu osiągnięcia celów projektowych."
+        },
+        {
+            question: "Omów podobieństwa i różnice między controllingiem a audytem, ewaluacją i monitoringiem projektu.",
+            answer: "Controlling, audyt, ewaluacja i monitoring projektu mają wspólny cel, jakim jest ocena i poprawa realizacji projektów, ale różnią się zakresem i podejściem. Controlling koncentruje się na bieżącej kontroli i optymalizacji procesów, audyt to formalna ocena zgodności i efektywności, ewaluacja to ocena wyników i skuteczności projektu, a monitoring to ciągłe śledzenie postępów i wskaźników."
+        },
+        {
+            question: "Omów podobieństwa i różnice między strategicznym i operacyjnym controllingiem projektów.",
+            answer: "Strategiczny controlling projektów skupia się na długoterminowych celach i zgodności z strategią organizacji, analizując portfele projektów i ich wpływ na rozwój organizacji. Operacyjny controlling koncentruje się na bieżącej realizacji projektów, monitorując koszty, terminy i zasoby w celu zapewnienia efektywności operacyjnej i zgodności z planem."
+        },
+        {
+            question: "Omów wpływ typowych form organizacji projektowej na realizację projektów.",
+            answer: "Typowe formy organizacji projektowej, takie jak struktury funkcjonalne, macierzowe i projektowe, mają różny wpływ na realizację projektów. Struktury funkcjonalne mogą ograniczać elastyczność i komunikację, macierzowe zapewniają lepsze zarządzanie zasobami, ale mogą prowadzić do konfliktów, a struktury projektowe oferują wysoką koncentrację na celach projektu, ale mogą być kosztowne."
+        },
+        {
+            question: "Główne rodzaje raportów stosowane w controllingu projektów.",
+            answer: "W controllingu projektów stosuje się różne rodzaje raportów, w tym raporty statusowe (monitorujące postęp projektu), raporty finansowe (analizujące koszty i budżet), raporty z ryzyka (identyfikujące i oceniające ryzyka), oraz raporty końcowe (podsumowujące wyniki i wnioski z realizacji projektu)."
+        },
+        {
+            question: "Omów rolę i zakres wsparcia techniki wartości wypracowanej (Earned Value) w procesie zarządzania projektem.",
+            answer: "Technika wartości wypracowanej (Earned Value) wspiera zarządzanie projektem poprzez integrację trzech kluczowych wskaźników: wartości planowanej (PV), wartości wypracowanej (EV) i kosztów rzeczywistych (AC). Pomaga w monitorowaniu postępów, identyfikacji odchyleń od planu, oraz prognozowaniu przyszłych wyników, co umożliwia podejmowanie świadomych decyzji zarządczych."
+        },
+        {
+            question: "Miejsce i znaczenie projektów w realizacji strategii rozwoju organizacji.",
+            answer: "Projekty odgrywają kluczową rolę w realizacji strategii rozwoju organizacji, ponieważ umożliwiają wdrażanie nowych inicjatyw, innowacji i zmian. Projekty przekształcają strategiczne cele w konkretne działania, pomagając organizacji adaptować się do zmieniających się warunków rynkowych i osiągać długoterminowy sukces."
+        },
+        {
+            question: "Omów wyzwania zarządzania programem, portfelem i łańcuchem projektów.",
+            answer: "Zarządzanie programem, portfelem i łańcuchem projektów wiąże się z wyzwaniami takimi jak koordynacja i priorytetyzacja projektów, alokacja zasobów, zarządzanie ryzykiem i konfliktami, oraz zapewnienie zgodności z celami strategicznymi. Wymaga to skutecznej komunikacji, monitorowania postępów i elastyczności w adaptacji do zmieniających się warunków."
+        },
+        {
+            question: "Porównaj metody doboru projektów do portfela inicjatyw strategicznych.",
+            answer: "Metody doboru projektów do portfela inicjatyw strategicznych obejmują analizę kosztów i korzyści, ocenę ryzyka, zgodność z celami strategicznymi, analizę wartości dla interesariuszy, oraz metody wielokryterialne. Każda z tych metod pozwala ocenić projekty pod różnymi względami, co pomaga w podejmowaniu świadomych decyzji inwestycyjnych."
+        },
+        {
+            question: "Oceń metodykę PMI Project Portfolio Management (PPM) z punktu widzenia skuteczności zarządzania portfelem projektów.",
+            answer: "Metodyka PMI Project Portfolio Management (PPM) jest skuteczna w zarządzaniu portfelem projektów dzięki strukturalnemu podejściu do selekcji, priorytetyzacji i monitorowania projektów. PPM zapewnia narzędzia i procesy, które wspierają zarządzanie zasobami, ryzykiem i wynikami, co prowadzi do lepszej zgodności projektów z celami strategicznymi organizacji."
+        },
+        {
+            question: "Oceń metodykę Managing Successful Programmes (MSP) z punktu widzenia skuteczności zarządzania portfelem projektów.",
+            answer: "Metodyka Managing Successful Programmes (MSP) skutecznie zarządza portfelem projektów poprzez zapewnienie ram i najlepszych praktyk do zarządzania programami złożonymi z wielu powiązanych projektów. MSP koncentruje się na realizacji korzyści strategicznych, zarządzaniu zmianami i ryzykiem, co zwiększa szanse na osiągnięcie długoterminowych celów organizacyjnych."
+        },
+        {
+            question: "Omów i porównaj najważniejsze techniki planowania przebiegu projektów w projektach.",
+            answer: "Najważniejsze techniki planowania przebiegu projektów obejmują wykresy Gantta, metodę ścieżki krytycznej (CPM) i technikę przeglądu i oceny programów (PERT). Wykresy Gantta wizualizują harmonogram, CPM identyfikuje najdłuższą ścieżkę zadań krytycznych, a PERT uwzględnia niepewności czasowe. Wszystkie te techniki wspierają planowanie, monitorowanie i kontrolę przebiegu projektów."
+        },
+        {
+            question: "W jaki sposób zapewnić wiarygodne szacunki czasu, zasobów i kosztów w projektach?",
+            answer: "Wiarygodne szacunki czasu, zasobów i kosztów w projektach można zapewnić poprzez dokładną analizę wymagań, zastosowanie historycznych danych i analogii, konsultacje z ekspertami, wykorzystanie technik estymacyjnych, takich jak PERT i analiza Monte Carlo, oraz regularne przeglądy i aktualizacje szacunków w miarę postępu projektu."
+        },
+        {
+            question: "W jaki sposób oszacować ryzyko związane z terminową realizacją projektów?",
+            answer: "Ryzyko związane z terminową realizacją projektów można oszacować poprzez identyfikację potencjalnych zagrożeń, ocenę ich prawdopodobieństwa i wpływu, analizę historycznych danych, konsultacje z ekspertami, oraz zastosowanie technik analizy ryzyka, takich jak analiza Monte Carlo, analiza scenariuszy i analiza drzew decyzyjnych. Regularne monitorowanie i zarządzanie ryzykiem są kluczowe."
+        },
+        {
+            question: "Znaczenie harmonogramu w zarządzaniu przebiegiem projektu.",
+            answer: "Harmonogram jest kluczowym narzędziem w zarządzaniu przebiegiem projektu, ponieważ zapewnia strukturę i plan działania, pozwala na monitorowanie postępów, identyfikację wąskich gardeł i potencjalnych opóźnień, oraz wspiera zarządzanie zasobami i komunikację w zespole projektowym. Skuteczny harmonogram zwiększa szanse na terminowe i zgodne z budżetem zakończenie projektu."
+        }
+    ];
+    
+    const randomQuestionBtn = document.getElementById('randomQuestionBtn');
+    const questionContainer = document.getElementById('questionContainer');
+    const questionText = document.getElementById('question');
+    const showAnswerBtn = document.getElementById('showAnswerBtn');
+    const nextQuestionBtn = document.getElementById('nextQuestionBtn');
+    const answerText = document.getElementById('answer');
+    
+    let currentQuestionIndex = -1;
+    
+    function getRandomQuestion() {
+        const randomIndex = Math.floor(Math.random() * questions.length);
+        return questions[randomIndex];
+    }
+    
+    function displayQuestion() {
+        const questionObj = getRandomQuestion();
+        currentQuestionIndex = questions.indexOf(questionObj);
+        questionText.innerText = questionObj.question;
+        answerText.innerText = questionObj.answer;
+        answerText.classList.add('hidden');
+        questionContainer.classList.remove('hidden');
+    }
+    
+    function showAnswer() {
+        answerText.classList.remove('hidden');
+    }
+    
+    randomQuestionBtn.addEventListener('click', displayQuestion);
+    showAnswerBtn.addEventListener('click', showAnswer);
+    
+       </script>
+</body>
+</html>
